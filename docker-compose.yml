@@ -1,0 +1,34 @@
+services:
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_internet_monitoring
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - 3314:3306
+    networks: 
+      - monitoring-net
+    command: ["mysqld", "--initialize-insecure", "--wait_timeout=300"]
+
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=db_internet_monitoring
+    restart: "always"
+    networks: 
+      - monitoring-net
+
+volumes:
+  db_data:
+
+networks:
+  monitoring-net:

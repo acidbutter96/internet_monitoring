@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "internet-monitoring"
+version = "0.1.0"
+description = ""
+authors = ["Marcos Pereira <marcos.p.10@hotmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+speedtest-cli = "^2.1.3"
+mysql-connector-python = "^9.0.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
