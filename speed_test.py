@@ -2,12 +2,13 @@ import speedtest
 import mysql.connector
 import time
 import socket
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from logging import getLogger
 
 # Função para obter o IP externo
 
 logger = getLogger(__name__)
+gmt_minus_3 = timezone(timedelta(hours=-3))
 
 
 def get_external_ip():
@@ -19,8 +20,6 @@ def get_external_ip():
     except Exception as e:  # noqa
         return None
 
-# Função para testar a velocidade da internet
-
 
 def test_speed():
     st = speedtest.Speedtest()
@@ -29,15 +28,15 @@ def test_speed():
     return st.results.dict()
 
 
-# Função para armazenar os resultados no banco de dados
 def store_results(result, cursor, cnx):
     logger.info("Storing results in database...")
+    dt_utc = datetime.strptime(result['timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
     download_speed = result['download'] / 1_000_000  # Convert to Mbps
     upload_speed = result['upload'] / 1_000_000  # Convert to Mbps
     ping = result['ping']
     server = result['server']
     client = result['client']
-    timestamp = datetime.strptime(result['timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
+    timestamp = dt_utc.astimezone(gmt_minus_3)
     bytes_sent = result['bytes_sent']
     bytes_received = result['bytes_received']
 
@@ -59,12 +58,8 @@ def store_results(result, cursor, cnx):
     cursor.execute(query, data)
     cnx.commit()
 
-    cursor.close()
-    cnx.close()
-
 
 def main():
-    # Conectar ao banco de dados MySQL
     logger.info("connecting to MySQL...")
     cnx = mysql.connector.connect(
         user='root',
@@ -81,13 +76,15 @@ def main():
             result = test_speed()
             logger.info(result, "\n", "=" * 100, "\n")
             store_results(result, cursor, cnx)
-            time.sleep((60 ** 2) / 16)
+            time.sleep((60 ** 2) / 8)
         except Exception as e:
             logger.error(f"Error: {e}")
             time.sleep(10)
 
+    cursor.close()
+    cnx.close()
+
 
 if __name__ == "__main__":
-    logger.basicConfig(level=logger.INFO)
     logger.info("Starting internet monitoring service...")
     main()

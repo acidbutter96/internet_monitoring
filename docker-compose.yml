@@ -1,6 +1,7 @@
 services:
   db:
     image: mysql:latest
+    hostname: db
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db_internet_monitoring
@@ -12,7 +13,6 @@ services:
       - 3314:3306
     networks: 
       - monitoring-net
-    command: ["mysqld", "--initialize-insecure", "--wait_timeout=300"]
 
   app:
     build: .
