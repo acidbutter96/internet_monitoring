@@ -1,0 +1,10 @@
+visualize_data.ipynb
+internal_speed_plot.html
+.git/
+__pycache__/
+*.pyc
+.venv/
+.env
+db_data/
+.ipynb_checkpoints/
+.DS_Store
