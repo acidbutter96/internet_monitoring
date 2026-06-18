@@ -1,18 +1,20 @@
-# Usar uma imagem Python oficial
 FROM python:3.12-slim
 
-# Definir o diretório de trabalho
 WORKDIR /app
 
-# Copiar os arquivos do script para o contêiner
-COPY . /app
+# RUN apt-get update \
+#     && apt-get install -y --no-install-recommends \
+#         default-mysql-client \
+#     && rm -rf /var/lib/apt/lists/*
 
-# Instalar as dependências
-# RUN pip install speedtest-cli mysql-connector-python
+COPY ./app /app
 
-RUN pip install poetry
+RUN pip install --no-cache-dir poetry
 
-RUN poetry install
+# COPY pyproject.toml poetry.lock /app/
 
-# Comando para executar o script
-CMD poetry run python speed_test.py
+RUN poetry config virtualenvs.create true \
+    && poetry install --no-root
+
+
+CMD ["poetry", "run", "python", "speed_test.py"]
