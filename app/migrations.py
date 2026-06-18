@@ -1,5 +1,5 @@
 migration = """
-CREATE TABLE IF NOT EXISTS speed_test_results (
+CREATE TABLE IF NOT EXISTS speed_tests (
     id INT AUTO_INCREMENT PRIMARY KEY,
     timestamp DATETIME NOT NULL,
     download_speed FLOAT NOT NULL,
@@ -31,5 +31,4 @@ CREATE TABLE IF NOT EXISTS speed_test_results (
 );
 """
 
-
-__all__ = ['migration']
+__all__ = ["migration"]

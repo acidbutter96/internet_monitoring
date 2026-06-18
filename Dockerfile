@@ -7,13 +7,14 @@ WORKDIR /app
 #         default-mysql-client \
 #     && rm -rf /var/lib/apt/lists/*
 
+COPY ./app /app
+
 RUN pip install --no-cache-dir poetry
 
-COPY pyproject.toml poetry.lock /app/
+# COPY pyproject.toml poetry.lock /app/
 
-RUN poetry config virtualenvs.create false \
+RUN poetry config virtualenvs.create true \
     && poetry install --no-root
 
-COPY ./app /app/app
 
-CMD ["poetry", "run", "python", "app/speed_test.py"]
+CMD ["poetry", "run", "python", "speed_test.py"]

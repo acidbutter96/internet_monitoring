@@ -1,41 +1,31 @@
 services:
     db:
-        image: mysql:8.4
+        image: mysql:latest
         hostname: db
         environment:
             MYSQL_ROOT_PASSWORD: root
             MYSQL_DATABASE: db_internet_monitoring
             MYSQL_USER: user
-            MYSQL_PASSWORD: user
+            MYSQL_PASSWORD: root
         volumes:
             - ./db_data:/var/lib/mysql
-            - ./dump:/dump
         ports:
             - "3314:3306"
         networks:
             - monitoring-net
-        healthcheck:
-            test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot" ]
-            interval: 5s
-            timeout: 5s
-            retries: 20
 
     app:
         build: .
         depends_on:
-            db:
-                condition: service_healthy
-        working_dir: /app
+            - db
         environment:
             DB_HOST: db
             DB_USER: root
             DB_PASSWORD: root
             DB_NAME: db_internet_monitoring
-            PYTHONPATH: /app
         restart: always
         volumes:
-            - .:/app
-        command: poetry run python app/speed_test.py
+            - ./app/:/app
         networks:
             - monitoring-net
 
